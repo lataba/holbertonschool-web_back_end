@@ -3,21 +3,33 @@
 Module for task 4-tasks.py
 """
 
+import asyncio
 from typing import List
-from heapq import heappush
+from heapq import heappush, heappop
 
 task_wait_random = __import__('3-tasks').task_wait_random
 
-
 async def task_wait_n(n: int, max_delay: int) -> List[float]:
     """
-    Async routine called task_wait_n that takes in 2 int arguments
-    (in this order): n and max_delay. You will spawn wait_random n times
-    with the specified max_delay.
+    Asynchronously spawns `n` tasks to wait for random
+    delays up to `max_delay` and returns a list of the
+    delays in ascending order.
     """
-    delay_list: List[float] = []
-    delay: float = 0
-    for _ in range(n):
+    delays = []
+    delay_queue = []
+
+    async def wait_and_store_delay():
+        """
+        Asynchronously waits for a random
+        delay and stores it in a priority queue.
+        """
         delay = await task_wait_random(max_delay)
-        heappush(delay_list, delay)
-    return delay_list
+        heappush(delay_queue, delay)
+
+    tasks = [wait_and_store_delay() for _ in range(n)]
+    await asyncio.gather(*tasks)
+
+    while delay_queue:
+        delays.append(heappop(delay_queue))
+
+    return delays
