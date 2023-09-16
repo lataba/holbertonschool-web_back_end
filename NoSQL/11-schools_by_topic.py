@@ -12,3 +12,4 @@ def schools_by_topic(mongo_collection, topic):
             "$in": [topic]
         }
     })
+    return schools
