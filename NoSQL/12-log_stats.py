@@ -6,15 +6,24 @@ Provides some stats about Nginx logs stored in MongoDB
 from pymongo import MongoClient
 
 
-if __name__ == "__main__":
+def helper(a: dict) -> int:
+    """Return log"""
     client = MongoClient('mongodb://127.0.0.1:27017')
-    nginx = client.logs.nginx
-    method = ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    logs = client.logs.nginx
+    return logs.count_documents(a)
 
-    print("{} logs".format(nginx.count_documents({})))
+
+def main():
+    """ provides some stats about Nginx logs stored in MongoDB """
+    print(f"{helper({})} logs")
     print("Methods:")
+    print(f"\tmethod GET: {helper({'method': 'GET'})}")
+    print(f"\tmethod POST: {helper({'method': 'POST'})}")
+    print(f"\tmethod PUT: {helper({'method': 'PUT'})}")
+    print(f"\tmethod PATCH: {helper({'method': 'PATCH'})}")
+    print(f"\tmethod DELETE: {helper({'method': 'DELETE'})}")
+    print(f"{helper({'method': 'GET', 'path': '/status'})} status check")
 
-    for request_type in method:
-        print("\tmethod {}: {}".format(
-            request_type, nginx.count_documents({"method": request_type})))
-    print("{} status check".format(nginx.count_documents({"path": "/status"})))
+
+if __name__ == "__main__":
+    main()
