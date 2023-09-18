@@ -20,12 +20,6 @@ class Pricing {
     return this._currency;
   }
 
-  set currency(value) {
-    if (currency instanceof Currency) {
-      this._currency = value;
-    }
-  }
-
   displayFullPrice() {
     return `${this.amount} ${this.currency.name} (${this.currency.code})`;
   }
